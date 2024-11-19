@@ -64,7 +64,8 @@ function rawdataToCoordinates(raw) {
                 accuracy: 5 * gps.hdop || 20000,
                 altitude: gps.alt || 0,
                 bearing: gps.track,
-                altitudeAccuracy: 5 * gps.vdop || 0
+                altitudeAccuracy: 5 * gps.vdop || 0,
+                altitude_accuracy: 5 * gps.vdop || 0
             },
             timestamp: gps.timestamp,
             time: gps.time,
@@ -75,7 +76,9 @@ function rawdataToCoordinates(raw) {
                 quality: gps.quality,
                 fix: gps.fix,
                 satsActive: gps.satused,
+                sats_active: gps.satused,
                 satsVisible: gps.satview,
+                sats_visible: gps.satview,
                 criteria: gps.type || null,
                 acceleration: gps.kphs || 0
             }
@@ -89,7 +92,8 @@ function rawdataToCoordinates(raw) {
             accuracy: 5 * gps.hdop || 20000,
             altitude: gps.alt || 0,
             bearing: gps.track,
-            altitudeAccuracy: 5 * gps.vdop || 0
+            altitudeAccuracy: 5 * gps.vdop || 0,
+            altitude_accuracy: 5 * gps.vdop || 0
         },
         timestamp: new Date(gps.time).getTime() / 1000,
         extras: {
@@ -99,7 +103,9 @@ function rawdataToCoordinates(raw) {
             quality: gps.quality,
             fix: gps.fix,
             satsActive: gps.satused,
+            sats_active: gps.satused,
             satsVisible: gps.satview,
+            sats_visible: gps.satview,
             criteria: gps.type || null,
             acceleration: gps.kphs || 0
         }

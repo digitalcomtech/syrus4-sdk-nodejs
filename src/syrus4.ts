@@ -27,6 +27,7 @@ import * as PeopleCounter from "./PeopleCounter"
 import Database from "./Database"
 import * as IOExpander from "./IOExpander"
 import * as PulseCounter from "./PulseCounter"
+import * as Segments from "./Segments"
 
 export {
 	Accelerometer,
@@ -48,6 +49,7 @@ export {
 	Redis,
 	RFID,
 	Serial,
+    Segments,
 	System,
 	SafeEngine,
 	PeopleCounter,

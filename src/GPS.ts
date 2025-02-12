@@ -35,9 +35,9 @@ function rawdataToCoordinates(raw: string) {
 
 	// Determine acceleration in mph.
 	var accel = 0; 
-	if ("mphs" in gps && gps.mphs > 0) {
+	if ("mphs" in gps) {
 		accel = gps.mphs;
-	} else if ("kphs" in gps && gps.kphs > 0) {
+	} else if ("kphs" in gps) {
 		accel = gps.kphs * 0.621371; // Convert kph to mph.
 	}
 
@@ -62,9 +62,9 @@ function rawdataToCoordinates(raw: string) {
 				quality: gps.quality,
 				fix: gps.fix,
 				satsActive: gps.satused,
-                sats_active: gps.satused,
+				sats_active: gps.satused,
 				satsVisible: gps.satview,
-                sats_visible: gps.satview,
+				sats_visible: gps.satview,
 				criteria: gps.type || null,
 				acceleration: accel 	 
 			}
@@ -90,9 +90,9 @@ function rawdataToCoordinates(raw: string) {
 			quality: gps.quality,
 			fix: gps.fix,
 			satsActive: gps.satused,
-            sats_active: gps.satused,
+			sats_active: gps.satused,
 			satsVisible: gps.satview,
-            sats_visible: gps.satview,
+			sats_visible: gps.satview,
 			criteria: gps.type || null,
 			acceleration: accel	 
 		}
@@ -227,7 +227,6 @@ async function watchTrackingResolution(callback, { distance = 0, heading = 0, ti
 		  console.error('Error executing tracking command:', error);
 		}
 	}
-	
 	
 	var handler = function (channel, gps) {
 		if (channel !== `tracking/notification/${name}`) return;

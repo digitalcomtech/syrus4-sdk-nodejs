@@ -888,7 +888,7 @@ RFID module get information about RFID states
 <a name="new_module_RFID..RFIDUpdate_new"></a>
 
 #### new RFIDUpdate()
-Event published by the sdk composed of of multiple RFID
+Event published by the sdk composed of multiple RFID
 authorized contains events from RFID
 
 <a name="module_SafeEngine"></a>

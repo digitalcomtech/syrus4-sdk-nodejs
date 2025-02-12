@@ -49,7 +49,7 @@ export {
 	Redis,
 	RFID,
 	Serial,
-    Segments,
+	Segments,
 	System,
 	SafeEngine,
 	PeopleCounter,

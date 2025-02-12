@@ -12,7 +12,17 @@ async function IsConnected(net){
 		// Error means no text so grep return empty which is means disconnected
 		return false;
 	}
-	return !(raw.length == 0 || raw.indexOf("linkdown") > -1);
+	if (net != "ppp0") {
+		return !(raw.length == 0 || raw.indexOf("linkdown") > -1);
+	}
+	else{
+		const result = await redis.hget("modem_information", "NO_CONN_TIME");
+		const no_conn_time = result !== null ? Number(result) : 0;
+		const hasConnection = no_conn_time <= 0;
+		const hasLink = !(raw.length === 0 || raw.indexOf("linkdown") > -1);
+		return hasConnection && hasLink;
+	}
+
 }
 
 /**
@@ -103,8 +113,6 @@ async function getNetworkInfo(net:string) {
 		end = raw.indexOf(" ", start);
 		if (start > -1) data["tx_bytes"] = parseInt(raw.substring(start, end));	
 	}
-
-
 
 	data.connected = await IsConnected(net).catch(Utils.$throw);
 	if (data.ip_address == "") {

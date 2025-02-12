@@ -57,10 +57,10 @@ function rawdataToCoordinates(raw) {
     var speed = Number(gps.speed) * 0.277778;
     // Determine acceleration in mph.
     var accel = 0;
-    if ("mphs" in gps && gps.mphs > 0) {
+    if ("mphs" in gps) {
         accel = gps.mphs;
     }
-    else if ("kphs" in gps && gps.kphs > 0) {
+    else if ("kphs" in gps) {
         accel = gps.kphs * 0.621371; // Convert kph to mph.
     }
     if (gps.timestamp != undefined) {

@@ -35,7 +35,7 @@ const lodash_isobjectlike_1 = __importDefault(require("lodash.isobjectlike"));
 const Redis_1 = require("./Redis");
 const Utils = __importStar(require("./Utils"));
 /**
- * Event published by the sdk composed of of multiple RFID
+ * Event published by the sdk composed of multiple RFID
  * authorized contains events from RFID
  * @class RFIDUpdate
  */

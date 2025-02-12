@@ -20,7 +20,7 @@ export interface RFIDEvent {
 }
 
 /**
- * Event published by the sdk composed of of multiple RFID
+ * Event published by the sdk composed of multiple RFID
  * authorized contains events from RFID
  * @class RFIDUpdate
  */

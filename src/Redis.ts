@@ -1,6 +1,13 @@
 import Redis from "ioredis";
 
-interface REDIS { host: string, port: number, password?: string }
+interface REDIS { 
+    host: string, 
+    port: number, 
+    password?: string
+    retryStrategy?: (retries: number) => number,
+    maxRetriesPerRequest?: number
+    connectTimeout?: number
+}
 
 let { SYRUS4G_REMOTE } = process.env
 let { SYRUS4G_APPS_REDIS_HOST, SYRUS4G_APPS_REDIS_PORT } = process.env
@@ -18,6 +25,15 @@ if (!SYRUS4G_REMOTE) {
 const REDIS_CONF: REDIS = {
 	"host": SYRUS4G_APPS_REDIS_HOST,
 	"port": parseInt(SYRUS4G_APPS_REDIS_PORT),
+    retryStrategy: (retries) => {
+        if (retries > 10) {
+            console.log('Retry attempts exhausted');
+          }
+          // Exponential backoff
+          return 1000 * 2 ** retries;
+    },
+    maxRetriesPerRequest: 20,
+    connectTimeout: 5000,
 }
 const SYSTEM_REDIS_CONF: REDIS = {
 	"host": SYRUS4G_SYSTEM_REDIS_HOST,
@@ -39,10 +55,39 @@ const redisSubscriber = new Redis(REDIS_CONF);
 const SystemRedisClient = new Redis(SYSTEM_REDIS_CONF);
 const SystemRedisSubscriber = new Redis(SYSTEM_REDIS_CONF);
 
+
 redisSubscriber.setMaxListeners(50);
 redisClient.setMaxListeners(50);
 SystemRedisClient.setMaxListeners(50);
 SystemRedisSubscriber.setMaxListeners(50);
+
+
+// Await until the connection is established and pong received
+
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitRedisConnection( maxRetries: number = 10) {
+    let retries = 0;
+    let isPong = false;
+    while (!isPong && retries < maxRetries) {
+        await sleep(1000);
+        try {
+            const pong = await redisClient.ping();
+            if (pong === "PONG") {
+                isPong = true;
+            }
+        } catch (error) {
+            console.log("Ping error:", error);
+        }
+        retries++;
+    }
+    if (!isPong) {
+        throw new Error("Redis connection failed");
+    }
+}
+
 
 export async function disconnectAll(){
 	redisClient.disconnect()
@@ -51,4 +96,4 @@ export async function disconnectAll(){
 	SystemRedisSubscriber.disconnect()
 }
 
-export { redisClient, redisSubscriber, SystemRedisClient, SystemRedisSubscriber };
+export { redisClient, redisSubscriber, SystemRedisClient, SystemRedisSubscriber, waitRedisConnection };

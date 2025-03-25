@@ -30,24 +30,17 @@ export async function onSafeEngineEvent (callback: (arg: SecoEvent) => void, err
     const topic = "seco/notification/state";
 
     // Get last state
-    const lastSecoState = await getStatus().catch(console.error);
-    const lastSecoObject = JSON.parse(JSON.stringify(lastSecoState));
+    //const lastSecoState = await getStatus().catch(console.error);
+    //const lastSecoObject = JSON.parse(JSON.stringify(lastSecoState));
 
-    if (lastSecoState != undefined) {
-         callback(lastSecoObject);
-    }
-
+    //if (lastSecoState != undefined) {
+    //     callback(lastSecoObject);
+    //}
 
     // Callback Handler
     const handler = (channel: string, data: any) => {
         if (channel != topic) return;
-
-        const event = { 
-            mode: null, 
-            trigger: null, 
-            state: Number(data)
-        };
-
+        const event: SecoEvent = JSON.parse(data);
         callback(event);
     }
 
@@ -68,5 +61,4 @@ export async function onSafeEngineEvent (callback: (arg: SecoEvent) => void, err
           this.unsubscribe();
       }  
     }
-
 }

@@ -19,7 +19,7 @@ interface TemperatureEvent {
 }
 
 /**
- * Event published by the sdk composed of of multiple TemperatureEvents
+ * Event published by the sdk composed of multiple TemperatureEvents
  * authorized object contains events from whitelisted ibuttons
  * @class TemperatureUpdate
  */

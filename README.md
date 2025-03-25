@@ -1054,7 +1054,7 @@ Temperature module get information about temperature sensors
 <a name="new_module_Temperature..TemperatureUpdate_new"></a>
 
 #### new TemperatureUpdate()
-Event published by the sdk composed of of multiple TemperatureEvents
+Event published by the sdk composed of multiple TemperatureEvents
 authorized object contains events from whitelisted ibuttons
 
 <a name="module_Temperature..getTemperatures"></a>

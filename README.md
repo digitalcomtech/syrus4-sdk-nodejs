@@ -192,22 +192,22 @@ Apps module to start/stop/enable/disable/install third parts apps running in ape
 
 
 * [Apps](#module_Apps)
-    * [~execute(action, app, zipPath)](#module_Apps..execute)
-    * [~start(app)](#module_Apps..start)
-    * [~stop(app)](#module_Apps..stop)
-    * [~restart(app)](#module_Apps..restart)
-    * [~enable(app)](#module_Apps..enable)
-    * [~disable(app)](#module_Apps..disable)
-    * [~list()](#module_Apps..list)
-    * [~state(app)](#module_Apps..state)
-    * [~install(app, zipPath)](#module_Apps..install)
-    * [~uninstall(app)](#module_Apps..uninstall)
+    * [~execute(action, app, zipPath, instance)](#module_Apps..execute)
+    * [~installApp(app, zipPath)](#module_Apps..installApp)
+    * [~uninstallApp(app, ver)](#module_Apps..uninstallApp)
+    * [~listApps()](#module_Apps..listApps) ⇒
+    * [~createInstance(name, app, ver)](#module_Apps..createInstance) ⇒
+    * [~deleteInstance(name, ver)](#module_Apps..deleteInstance) ⇒
+    * [~listInstances()](#module_Apps..listInstances) ⇒
+    * [~startInstance(name)](#module_Apps..startInstance) ⇒
+    * [~stopInstance(name)](#module_Apps..stopInstance) ⇒
+    * [~restartInstance(name)](#module_Apps..restartInstance) ⇒
     * [~setConfiguration(app, newConfig)](#module_Apps..setConfiguration)
     * [~getConfiguration(app)](#module_Apps..getConfiguration)
 
 <a name="module_Apps..execute"></a>
 
-### Apps~execute(action, app, zipPath)
+### Apps~execute(action, app, zipPath, instance)
 allows to execute commands from the apps-manager utility from ApexOs
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -216,84 +216,14 @@ allows to execute commands from the apps-manager utility from ApexOs
 | --- | --- | --- |
 | action |  | action to execute |
 | app | <code></code> | the name of the App |
-| zipPath | <code></code> | the zip location unde where unzip the app |
+| zipPath | <code></code> | the zip location under where unzip the app |
+| instance | <code></code> |  |
 
-<a name="module_Apps..start"></a>
+<a name="module_Apps..installApp"></a>
 
-### Apps~start(app)
-Start an application under /data/applications folder
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-
-| Param | Description |
-| --- | --- |
-| app | the name of the app |
-
-<a name="module_Apps..stop"></a>
-
-### Apps~stop(app)
-Stop an application under /data/applications folder
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-
-| Param | Description |
-| --- | --- |
-| app | the name of the app |
-
-<a name="module_Apps..restart"></a>
-
-### Apps~restart(app)
-Restart an application under /data/applications folder
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-
-| Param | Description |
-| --- | --- |
-| app | the name of the app |
-
-<a name="module_Apps..enable"></a>
-
-### Apps~enable(app)
-Enable an application for start on boot under /data/applications folder
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-
-| Param | Description |
-| --- | --- |
-| app | the name of the app |
-
-<a name="module_Apps..disable"></a>
-
-### Apps~disable(app)
-Disable an application for start on boot under /data/applications folder
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-
-| Param | Description |
-| --- | --- |
-| app | the name of the app |
-
-<a name="module_Apps..list"></a>
-
-### Apps~list()
-List all the running applications
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-<a name="module_Apps..state"></a>
-
-### Apps~state(app)
-return the state of the app
-
-**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
-
-| Param | Description |
-| --- | --- |
-| app | the name of the app |
-
-<a name="module_Apps..install"></a>
-
-### Apps~install(app, zipPath)
-Allows install an app receive as parameter the name of the app and the zip location or the data of the zip in question
+### Apps~installApp(app, zipPath)
+Allows to install an app receive as parameter the name of the app and the zip
+ location or the data of the zip in question.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
 
@@ -302,9 +232,9 @@ Allows install an app receive as parameter the name of the app and the zip locat
 | app | the name of the app |
 | zipPath | the zip location |
 
-<a name="module_Apps..uninstall"></a>
+<a name="module_Apps..uninstallApp"></a>
 
-### Apps~uninstall(app)
+### Apps~uninstallApp(app, ver)
 Uninstall and deletes the data from an app
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -312,6 +242,111 @@ Uninstall and deletes the data from an app
 | Param | Description |
 | --- | --- |
 | app | the name of the app |
+| ver |  |
+
+<a name="module_Apps..listApps"></a>
+
+### Apps~listApps() ⇒
+Lists all the installed applications.
+
+This function executes the "list-apps" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
+of the command execution.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the list of installed applications.  
+<a name="module_Apps..createInstance"></a>
+
+### Apps~createInstance(name, app, ver) ⇒
+Creates an instance of an application.
+
+This function executes the "create-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
+of the command execution.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the result of the instance creation.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the instance to create. |
+| app | <code>string</code> | The name of the application. |
+| ver | <code>string</code> | The version of the application. |
+
+<a name="module_Apps..deleteInstance"></a>
+
+### Apps~deleteInstance(name, ver) ⇒
+Deletes an instance of an application.
+
+This function executes the "delete-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
+of the instance deletion.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the result of the instance deletion.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the instance to delete. |
+| ver | <code>string</code> | The version of the instance. |
+
+<a name="module_Apps..listInstances"></a>
+
+### Apps~listInstances() ⇒
+Lists all instances of an application.
+
+This function executes the "list-instances" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the list of instances.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the list of instances.  
+<a name="module_Apps..startInstance"></a>
+
+### Apps~startInstance(name) ⇒
+Starts an instance of an application.
+
+This function executes the "start-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
+of starting the instance.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the result of starting the instance.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the instance to start. |
+
+<a name="module_Apps..stopInstance"></a>
+
+### Apps~stopInstance(name) ⇒
+Stops an instance of an application.
+
+This function executes the "stop-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
+of stopping the instance.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the result of stopping the instance.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the instance to stop. |
+
+<a name="module_Apps..restartInstance"></a>
+
+### Apps~restartInstance(name) ⇒
+Restarts an instance of an application.
+
+This function executes the "restart-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
+of restarting the instance.
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+**Returns**: A promise that resolves with the result of restarting the instance.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the instance to restart. |
 
 <a name="module_Apps..setConfiguration"></a>
 

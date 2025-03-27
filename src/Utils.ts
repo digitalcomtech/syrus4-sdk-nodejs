@@ -68,7 +68,6 @@ export async function OSExecute(...args:string[]): Promise<any> {
 	}
 
 	let command = args.map((x) => (x != null ? x.trim() : "")).join(" ");
-	console.log("OSExecute", command)
 	let opts: any = { timeout: 60000 * 10, maxBuffer: 1024 * 1024 * 5 };
 
 	if (command.startsWith("apx-")) command = `sudo ${command}`

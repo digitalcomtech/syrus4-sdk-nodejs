@@ -43,9 +43,10 @@ if (!SYRUS4G_APP_CONF_FILE)
  * @param app the name of the App
  * @param zipPath the zip location under where unzip the app
  * @param instance
+ * @param ver
  */
-function execute(action, app = null, zipPath = null, instance = null) {
-    return Utils.OSExecute("syrus-apps-manager", action, instance, app, zipPath);
+function execute(action, app = null, zipPath = null, instance = null, ver = null) {
+    return Utils.OSExecute("syrus-apps-manager", action, instance, app, zipPath, ver);
 }
 /***************************************************************************************************
  * Apps
@@ -53,17 +54,19 @@ function execute(action, app = null, zipPath = null, instance = null) {
 /**
  *  Allows to install an app receive as parameter the name of the app and the zip
  *  location or the data of the zip in question.
- * @param app the name of the app
  * @param zipPath the zip location
  */
-function installApp(app, zipPath) {
+function installApp(zipPath) {
+    if (!zipPath) {
+        return Promise.reject(new Error('zipPath is required'));
+    }
     return new Promise((resolve, reject) => {
         fs.access(zipPath, fs.constants.F_OK, (err) => {
             if (err) {
-                return console.error('App ZIP file does not exist.');
+                return reject(new Error('App ZIP file does not exist.'));
             }
             else {
-                return execute("install-app", app, zipPath)
+                return execute("install-app", zipPath)
                     .then(resolve)
                     .catch(reject);
             }
@@ -106,7 +109,7 @@ function listApps() {
  * @returns A promise that resolves with the result of the instance creation.
  */
 function createInstance(name, app, ver) {
-    return execute("create-instance", name, app, ver);
+    return execute("create-instance", app, null, name, ver);
 }
 /**
  * Deletes an instance of an application.
@@ -116,7 +119,6 @@ function createInstance(name, app, ver) {
  * of the instance deletion.
  *
  * @param {string} name - The name of the instance to delete.
- * @param {string} ver - The version of the instance.
  * @returns A promise that resolves with the result of the instance deletion.
  */
 function deleteInstance(name) {

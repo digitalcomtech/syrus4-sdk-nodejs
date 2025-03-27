@@ -89,7 +89,6 @@ async function OSExecute(...args) {
         retry = args.shift();
     }
     let command = args.map((x) => (x != null ? x.trim() : "")).join(" ");
-    console.log("OSExecute", command);
     let opts = { timeout: 60000 * 10, maxBuffer: 1024 * 1024 * 5 };
     if (command.startsWith("apx-"))
         command = `sudo ${command}`;

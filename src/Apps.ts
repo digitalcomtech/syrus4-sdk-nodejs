@@ -23,9 +23,11 @@ type AppAction = "install-app" | "delete-app" | "list-apps" | "create-instance" 
  * @param app the name of the App
  * @param zipPath the zip location under where unzip the app
  * @param instance
+ * @param ver
  */
-function execute(action: AppAction, app: string = null, zipPath: string = null, instance: string = null) {
-    return Utils.OSExecute("syrus-apps-manager", action, instance, app, zipPath);
+function execute(action: AppAction, app: string = null, zipPath: string = null,
+                 instance: string = null, ver: string = null) {
+    return Utils.OSExecute("syrus-apps-manager", action, instance, app, zipPath, ver);
 }
 
 /***************************************************************************************************
@@ -34,16 +36,18 @@ function execute(action: AppAction, app: string = null, zipPath: string = null, 
 /**
  *  Allows to install an app receive as parameter the name of the app and the zip
  *  location or the data of the zip in question.
- * @param app the name of the app
  * @param zipPath the zip location
  */
-function installApp(app: string, zipPath: string) {
+function installApp(zipPath: string) {
+    if (!zipPath) {
+        return Promise.reject(new Error('zipPath is required'));
+    }
     return new Promise((resolve, reject) => {
         fs.access(zipPath, fs.constants.F_OK, (err) => {
             if (err) {
-                return console.error('App ZIP file does not exist.');
+                return reject(new Error('App ZIP file does not exist.'));
             } else {
-                return execute("install-app", app, zipPath)
+                return execute("install-app", zipPath)
                     .then(resolve)
                     .catch(reject);
             }
@@ -89,7 +93,7 @@ function listApps() {
  * @returns A promise that resolves with the result of the instance creation.
  */
 function createInstance(name: string, app: string, ver: string) {
-    return execute("create-instance", name, app, ver);
+    return execute("create-instance", app, null, name, ver);
 }
 
 /**
@@ -100,7 +104,6 @@ function createInstance(name: string, app: string, ver: string) {
  * of the instance deletion.
  *
  * @param {string} name - The name of the instance to delete.
- * @param {string} ver - The version of the instance.
  * @returns A promise that resolves with the result of the instance deletion.
  */
 function deleteInstance(name: string) {

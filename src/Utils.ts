@@ -66,7 +66,8 @@ export async function OSExecute(...args:string[]): Promise<any> {
 	if (args[0].startsWith('$retry')){
 		retry = args.shift()
 	}
-	let command = args.map((x)=>x.trim()).join(" ");
+
+	let command = args.map((x) => (x != null ? x.trim() : "")).join(" ");
 	let opts: any = { timeout: 60000 * 10, maxBuffer: 1024 * 1024 * 5 };
 
 	if (command.startsWith("apx-")) command = `sudo ${command}`

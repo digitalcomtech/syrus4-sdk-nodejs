@@ -31,7 +31,7 @@ exports.onTemperatureChange = exports.removeTemperatureAliases = exports.removeT
 const Redis_1 = require("./Redis");
 const Utils = __importStar(require("./Utils"));
 /**
- * Event published by the sdk composed of of multiple TemperatureEvents
+ * Event published by the sdk composed of multiple TemperatureEvents
  * authorized object contains events from whitelisted ibuttons
  * @class TemperatureUpdate
  */

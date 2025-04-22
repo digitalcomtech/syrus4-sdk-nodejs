@@ -31,7 +31,8 @@ function distanceBetweenCoordinates(coord1, coord2) {
 
 function rawdataToCoordinates(raw: string) {
 	var gps = JSON.parse(raw);
-	var speed = Number(gps.speed) * 0.277778;
+	var preSpeed = Number(gps.speed) * 0.277778;
+	var speed = Math.floor(preSpeed * 100) / 100;
 
 	// Determine acceleration in mph.
 	var accel = 0; 

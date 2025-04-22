@@ -192,7 +192,7 @@ Apps module to start/stop/enable/disable/install third parts apps running in ape
 
 
 * [Apps](#module_Apps)
-
+    * [~execute(action, app, zipPath, instance, ver)](#module_Apps..execute)
     * [~installApp(zipPath)](#module_Apps..installApp)
     * [~uninstallApp(app, ver)](#module_Apps..uninstallApp)
     * [~listApps()](#module_Apps..listApps) ⇒
@@ -202,6 +202,25 @@ Apps module to start/stop/enable/disable/install third parts apps running in ape
     * [~startInstance(name)](#module_Apps..startInstance) ⇒
     * [~stopInstance(name)](#module_Apps..stopInstance) ⇒
     * [~restartInstance(name)](#module_Apps..restartInstance) ⇒
+    * [~setConfiguration(app, newConfig)](#module_Apps..setConfiguration)
+    * [~getConfiguration(app)](#module_Apps..getConfiguration)
+
+<a name="module_Apps..execute"></a>
+
+### Apps~execute(action, app, zipPath, instance, ver)
+allows to execute commands from the apps-manager utility from ApexOs
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+
+| Param | Default | Description |
+| --- | --- | --- |
+| action |  | action to execute |
+| app | <code></code> | the name of the App |
+| zipPath | <code></code> | the zip location under where unzip the app |
+| instance | <code></code> |  |
+| ver | <code></code> |  |
+
+<a name="module_Apps..installApp"></a>
 
 ### Apps~installApp(zipPath)
 Allows to install an app receive as parameter the name of the app and the zip
@@ -209,9 +228,9 @@ Allows to install an app receive as parameter the name of the app and the zip
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
 
-| Param | Description      |
-| --- |------------------|
-| zipPath | The zip location |
+| Param | Description |
+| --- | --- |
+| zipPath | the zip location |
 
 <a name="module_Apps..uninstallApp"></a>
 
@@ -220,15 +239,18 @@ Uninstall and deletes the data from an app
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
 
-| Param | Description                           |
-| --- |---------------------------------------|
-| app | The name of the app to be uninstalled |
-| ver | Version of the app to be uninstalled  |
+| Param | Description |
+| --- | --- |
+| app | the name of the app |
+| ver |  |
 
 <a name="module_Apps..listApps"></a>
 
 ### Apps~listApps() ⇒
-Lists all the installed applications and returns a promise that resolves with the result
+Lists all the installed applications.
+
+This function executes the "list-apps" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
 of the command execution.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -236,7 +258,10 @@ of the command execution.
 <a name="module_Apps..createInstance"></a>
 
 ### Apps~createInstance(name, app, ver) ⇒
-Creates an instance of an application and returns a promise that resolves with the result
+Creates an instance of an application.
+
+This function executes the "create-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
 of the command execution.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -251,7 +276,10 @@ of the command execution.
 <a name="module_Apps..deleteInstance"></a>
 
 ### Apps~deleteInstance(name) ⇒
-Deletes an instance of an application and returns a promise that resolves with the result
+Deletes an instance of an application.
+
+This function executes the "delete-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
 of the instance deletion.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -264,14 +292,20 @@ of the instance deletion.
 <a name="module_Apps..listInstances"></a>
 
 ### Apps~listInstances() ⇒
-Lists all instances of an application and returns a promise that resolves with the list of instances.
+Lists all instances of an application.
+
+This function executes the "list-instances" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the list of instances.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
 **Returns**: A promise that resolves with the list of instances.  
 <a name="module_Apps..startInstance"></a>
 
 ### Apps~startInstance(name) ⇒
-Starts an instance of an application and returns a promise that resolves with the result
+Starts an instance of an application.
+
+This function executes the "start-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
 of starting the instance.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -284,7 +318,10 @@ of starting the instance.
 <a name="module_Apps..stopInstance"></a>
 
 ### Apps~stopInstance(name) ⇒
-Stops an instance of an application and returns a promise that resolves with the result
+Stops an instance of an application.
+
+This function executes the "stop-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
 of stopping the instance.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -297,7 +334,10 @@ of stopping the instance.
 <a name="module_Apps..restartInstance"></a>
 
 ### Apps~restartInstance(name) ⇒
-Restarts an instance of an application and returns a promise that resolves with the result
+Restarts an instance of an application.
+
+This function executes the "restart-instance" action using the `execute` function
+from the `Utils` module. It returns a promise that resolves with the result
 of restarting the instance.
 
 **Kind**: inner method of [<code>Apps</code>](#module_Apps)  
@@ -307,6 +347,28 @@ of restarting the instance.
 | --- | --- | --- |
 | name | <code>string</code> | The name of the instance to restart. |
 
+<a name="module_Apps..setConfiguration"></a>
+
+### Apps~setConfiguration(app, newConfig)
+write .env file configuration of the app, if the .env exists, replace it
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+
+| Param | Description |
+| --- | --- |
+| app | the name of the app |
+| newConfig |  |
+
+<a name="module_Apps..getConfiguration"></a>
+
+### Apps~getConfiguration(app)
+Get the contents of SYRUS4G_APP_CONF_FILE file where it stored the configuration of the app
+
+**Kind**: inner method of [<code>Apps</code>](#module_Apps)  
+
+| Param | Description |
+| --- | --- |
+| app | the name of the app |
 
 <a name="module_Bluetooth"></a>
 
@@ -1070,73 +1132,12 @@ monitor temperature notifications
 ## Update
 Update module check for update and make update for ApexOS
 
-
-* [Update](#module_Update)
-    * [~checkCore()](#module_Update..checkCore)
-    * [~UpdateCore(force)](#module_Update..UpdateCore)
-    * [~listOS()](#module_Update..listOS)
-    * [~checkOS()](#module_Update..checkOS)
-    * [~recoverOS()](#module_Update..recoverOS)
-    * [~updateOS(force)](#module_Update..updateOS)
-    * [~installOS(package_name)](#module_Update..installOS)
-
-<a name="module_Update..checkCore"></a>
-
-### Update~checkCore()
-Check if an update is available in the dctserver for Core Ccomponentss
-
-**Kind**: inner method of [<code>Update</code>](#module_Update)  
-<a name="module_Update..UpdateCore"></a>
-
-### Update~UpdateCore(force)
-Start the update of the core packages by using the dctserver
-
-**Kind**: inner method of [<code>Update</code>](#module_Update)  
-
-| Param | Default | Description |
-| --- | --- | --- |
-| force | <code>false</code> | The same as start but without checking the network interface |
-
-<a name="module_Update..listOS"></a>
-
-### Update~listOS()
-list installed packages from OS components in the distribution
-
-**Kind**: inner method of [<code>Update</code>](#module_Update)  
 <a name="module_Update..checkOS"></a>
 
 ### Update~checkOS()
 Check if an update is available in the dctserver for OS apps and return a list of the latest version of the packages
 
 **Kind**: inner method of [<code>Update</code>](#module_Update)  
-<a name="module_Update..recoverOS"></a>
-
-### Update~recoverOS()
-allows to recover from broken packages when a bad install or updates happens
-
-**Kind**: inner method of [<code>Update</code>](#module_Update)  
-<a name="module_Update..updateOS"></a>
-
-### Update~updateOS(force)
-Start the update of the OS components by using the dctserver
-
-**Kind**: inner method of [<code>Update</code>](#module_Update)  
-
-| Param | Description |
-| --- | --- |
-| force | The same as start but without checking the network interface |
-
-<a name="module_Update..installOS"></a>
-
-### Update~installOS(package_name)
-upgrade a package to the lastest version available in the dctserver
-
-**Kind**: inner method of [<code>Update</code>](#module_Update)  
-
-| Param | Description |
-| --- | --- |
-| package_name | the name of the  package that it wants to be updated |
-
 <a name="module_Utils"></a>
 
 ## Utils

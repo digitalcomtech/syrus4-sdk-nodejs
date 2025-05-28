@@ -4,7 +4,7 @@ Interactive function to consult enable or disable multiple modules for APEX OS
 ## Quick Start
 Install using npm github
 ```bash
-$ npm install [https://github.com/dctdevelop/syrus4-nodejs/tarball/master](https://github.com/digitalcomtech/syrus4-sdk-nodejs/tarball/master)
+$ npm install https://github.com/digitalcomtech/syrus4-sdk-nodejs/tarball/master
 ```
 
 

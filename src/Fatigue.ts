@@ -27,6 +27,7 @@ export async function onFatigueEvent(
   errorCallback: (arg: Error) => void): Promise<{ unsubscribe: () => void, off: () => void }> {
   const serial_state_topic = "serial/notification/fatigue_s/state"
   const serial_photo_topic = "serial/notification/fatigue_s/photo"
+  const serial_event_topic = "serial/notification/fatigue_s/event"
   const mdsm7_topic = "fatigue/notification/mdsm7"
   const mdsm7_topic_update = "ndm/notification/mdsm7/update"
   const mdsm7_topic_event = "ndm/notification/mdsm7/event"
@@ -35,7 +36,7 @@ export async function onFatigueEvent(
   const all_topics = [
     serial_state_topic, serial_photo_topic,
     mdsm7_topic, mdsm7_topic_event, mdsm7_topic_update,
-    cipia_topic_event, cipia_topic_update,
+    cipia_topic_event, cipia_topic_update,serial_event_topic,
   ]
   // subscribe to receive updates
   try {
@@ -63,6 +64,12 @@ export async function onFatigueEvent(
         state.channel = 'serial'
         state.epoch = Number(state.latest_photo.split('-')[0])
         state.event = state.latest_photo.split('-')[1].split('.')[0]
+      }
+      if (channel == serial_event_topic) {
+        data = JSON.parse(data)
+        state.channel = 'serial'
+        state.epoch = data.system_epoch
+        state.event = data.event
       }
       if ([mdsm7_topic, mdsm7_topic_event].includes(channel)) {
         data = JSON.parse(data)

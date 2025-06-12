@@ -74,14 +74,9 @@ async function onFatigueEvent(callback, errorCallback) {
             }
             if (channel == serial_event_topic) {
                 data = JSON.parse(data);
-                console.log('-+-+-+-+-+ serial_event_topic', data);
-                console.log('-+-+-+-+-+ serial_event epoch: ', data.system_epoch);
-                console.log('-+-+-+-+-+ serial_event: ', data.event);
                 state.channel = 'serial';
                 state.epoch = data.system_epoch;
                 state.event = data.event;
-                console.log('-+-+-+-+-+ serial_state epoch: ', state.epoch);
-                console.log('-+-+-+-+-+ serial_state event: ', state.event);
             }
             if ([mdsm7_topic, mdsm7_topic_event].includes(channel)) {
                 data = JSON.parse(data);

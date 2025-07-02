@@ -67,7 +67,8 @@ function rawdataToCoordinates(raw: string) {
 				satsVisible: gps.satview,
 				sats_visible: gps.satview,
 				criteria: gps.type || null,
-				acceleration: accel 	 
+				acceleration: accel,
+				elevation: gps.elevation || null
 			}
 		};
 	}
@@ -95,7 +96,8 @@ function rawdataToCoordinates(raw: string) {
 			satsVisible: gps.satview,
 			sats_visible: gps.satview,
 			criteria: gps.type || null,
-			acceleration: accel	 
+			acceleration: accel,
+			elevation: gps.elevation || null
 		}
 	};
 }

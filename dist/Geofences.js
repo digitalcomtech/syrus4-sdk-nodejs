@@ -29,6 +29,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Utils = __importStar(require("./Utils"));
 const lodash_isobjectlike_1 = __importDefault(require("lodash.isobjectlike"));
 const Redis_1 = require("./Redis");
+const semver_1 = __importDefault(require("semver"));
 /**
  * Geofences module
  * @module Geofences
@@ -52,7 +53,7 @@ function addGeofence({ name, lngLats, group = "", namespace, type, radius }) {
     if (type != "poly" && type != "circular")
         throw "unrecognized type of geofence";
     if (Array.isArray(lngLats))
-        lngLats = lngLats.map(coord => coord.join(",")).join(" ");
+        lngLats = lngLats.map((coord) => coord.join(",")).join(" ");
     return Utils.OSExecute(`apx-geofences add ${namespace} ${group} ${type} ${name} ${radius || ""} ${lngLats}`);
 }
 /**
@@ -99,14 +100,14 @@ async function get({ namespace = "", name = null } = {}) {
         namespace = Utils.getPrefix();
     }
     var results = await Utils.OSExecute(`apx-geofences getstatus ${namespace}`);
-    results = results.map(fence => {
+    results = results.map((fence) => {
         if (!fence.name)
             fence.name = fence.geo_name;
         fence.time = new Date(parseInt(fence.time) * 1000);
         return fence;
     });
     if (name) {
-        return results.find(fence => fence.name == name);
+        return results.find((fence) => fence.name == name);
     }
     return results;
 }
@@ -146,12 +147,12 @@ async function watchGeofencesSpeedLimits(callback, errorCb, { namespace = null }
         try {
             let state = JSON.parse(data);
             if (!(0, lodash_isobjectlike_1.default)(state))
-                throw 'not objectLike';
+                throw "not objectLike";
             state.is_inside = true;
             callback(state);
         }
         catch (error) {
-            console.log('watchGeofencesSpeedLimits Error:', error);
+            console.log("watchGeofencesSpeedLimits Error:", error);
         }
     };
     try {
@@ -165,7 +166,7 @@ async function watchGeofencesSpeedLimits(callback, errorCb, { namespace = null }
         unsubscribe: () => {
             Redis_1.SystemRedisSubscriber.off("pmessage", handler);
             Redis_1.SystemRedisSubscriber.unsubscribe(`geofences/notification/warning/${namespace}/*`);
-        }
+        },
     };
 }
 /**
@@ -182,14 +183,16 @@ async function watchGeofences(callback, errorCb, { namespace = null } = {}) {
     var handler = function (pattern, channel, data) {
         if (pattern !== `geofences/notification/${namespace}/*`)
             return;
-        var [ns, group, name] = channel.replace(`geofences/notification/`, "").split("/");
+        var [ns, group, name] = channel
+            .replace(`geofences/notification/`, "")
+            .split("/");
         var [is_inside, timestamp] = data.split(",");
         callback({
             name: name,
             namespace: ns,
             group: group,
             is_inside: `${is_inside}` == "true",
-            timestamp: new Date(parseInt(timestamp) * 1000)
+            timestamp: new Date(parseInt(timestamp) * 1000),
         });
     };
     try {
@@ -203,7 +206,7 @@ async function watchGeofences(callback, errorCb, { namespace = null } = {}) {
         unsubscribe: () => {
             Redis_1.SystemRedisSubscriber.off("pmessage", handler);
             Redis_1.SystemRedisSubscriber.unsubscribe(`geofences/notification/${namespace}/*`);
-        }
+        },
     };
 }
 /**
@@ -220,13 +223,15 @@ function watchGroups(callback, errorCb, { namespace = null } = {}) {
     var handler = function (pattern, channel, data) {
         if (pattern !== `geofences/group/notification/${namespace}/*`)
             return;
-        var [ns, group_name] = channel.replace(`geofences/group/notification/`, "").split("/");
+        var [ns, group_name] = channel
+            .replace(`geofences/group/notification/`, "")
+            .split("/");
         var [is_inside, timestamp] = data.split(",");
         callback({
             name: group_name,
             namespace: ns,
             is_inside: `${is_inside}` == "true",
-            timestamp: new Date(parseInt(timestamp) * 1000)
+            timestamp: new Date(parseInt(timestamp) * 1000),
         });
     };
     try {
@@ -240,7 +245,77 @@ function watchGroups(callback, errorCb, { namespace = null } = {}) {
         unsubscribe: () => {
             Redis_1.SystemRedisSubscriber.off("pmessage", handler);
             Redis_1.SystemRedisSubscriber.unsubscribe(`geofences/group/notification/${namespace}/*`);
-        }
+        },
     };
 }
-exports.default = { addGeofence, updateGeofence, removeGeofence, getNamespaces, get, getAll, watchGeofences, watchGroups, watchGeofencesSpeedLimits, deleteAll };
+/**
+ * Get the status of geofence groups
+ * @param {Object} opts - Options object
+ * @param {string} opts.namespace - Namespace to query, defaults to current prefix if not provided
+ * @param {string|null} opts.name - Optional group name to filter results
+ * @returns {Promise<Array|Object>} Array of group status objects or single group if name is specified
+ */
+async function getGroupsStatus({ namespace = "", name = null } = {}) {
+    if (!namespace) {
+        namespace = Utils.getPrefix();
+    }
+    const versionData = await Utils.OSExecute(`apx-geofences version`);
+    const versionString = versionData.version || versionData;
+    if (!semver_1.default.gte(versionString, "1.4.2")) {
+        console.log("Invalid Geofences version to consult group status.");
+        return [];
+    }
+    var results = await Utils.OSExecute(`apx-geofences groupstatus ${namespace}`);
+    results = results.map((group) => {
+        return {
+            name: group.group,
+            namespace: namespace,
+            is_inside: group.is_inside,
+            timestamp: new Date(group.time * 1000),
+        };
+    });
+    if (name) {
+        return results.find((group) => group.name == name);
+    }
+    return results;
+}
+/**
+ * Watch for geofence removal events
+ * @param {Function} callback - Callback function invoked when a geofence is removed
+ * @param {Function} errorCb - Error callback function invoked if subscription fails
+ * @returns {Object} Object with unsubscribe method to stop watching
+ */
+function watchRemoves(callback, errorCb) {
+    var handler = function (channel, data) {
+        if (channel !== `geofences/configuration/remove`)
+            return;
+        callback(data);
+    };
+    try {
+        Redis_1.SystemRedisSubscriber.subscribe(`geofences/configuration/remove`);
+        Redis_1.SystemRedisSubscriber.on("message", handler);
+    }
+    catch (error) {
+        errorCb(error);
+    }
+    return {
+        unsubscribe: () => {
+            Redis_1.SystemRedisSubscriber.off("message", handler);
+            Redis_1.SystemRedisSubscriber.unsubscribe(`geofences/configuration/remove`);
+        },
+    };
+}
+exports.default = {
+    addGeofence,
+    updateGeofence,
+    removeGeofence,
+    getNamespaces,
+    get,
+    getAll,
+    watchGeofences,
+    watchGroups,
+    watchGeofencesSpeedLimits,
+    deleteAll,
+    getGroupsStatus,
+    watchRemoves,
+};

@@ -1,6 +1,7 @@
 import * as Utils from "./Utils";
-import _isObjectLike from 'lodash.isobjectlike';
+import _isObjectLike from "lodash.isobjectlike";
 import { SystemRedisSubscriber as subscriber } from "./Redis";
+import semver from "semver";
 
 /**
  * Geofences module
@@ -18,15 +19,21 @@ import { SystemRedisSubscriber as subscriber } from "./Redis";
  * radius: radius for circular fences, in meters, must be >= 50;
  */
 function addGeofence({ name, lngLats, group = "", namespace, type, radius }) {
-	if (!namespace) {
-		namespace = Utils.getPrefix();
-	}
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
 
-	if (!type) type = !!radius ? "circular" : "poly";
-	if (type != "poly" && type != "circular") throw "unrecognized type of geofence";
-	if (Array.isArray(lngLats)) lngLats = lngLats.map(coord => coord.join(",")).join(" ");
+  if (!type) type = !!radius ? "circular" : "poly";
+  if (type != "poly" && type != "circular")
+    throw "unrecognized type of geofence";
+  if (Array.isArray(lngLats))
+    lngLats = lngLats.map((coord) => coord.join(",")).join(" ");
 
-	return Utils.OSExecute(`apx-geofences add ${namespace} ${group} ${type} ${name} ${radius || ""} ${lngLats}`);
+  return Utils.OSExecute(
+    `apx-geofences add ${namespace} ${group} ${type} ${name} ${
+      radius || ""
+    } ${lngLats}`
+  );
 }
 
 /**
@@ -40,7 +47,7 @@ function addGeofence({ name, lngLats, group = "", namespace, type, radius }) {
  * radius: radius for circular fences, in meters, must be >= 50;
  */
 function updateGeofence(opts) {
-	addGeofence(opts);
+  addGeofence(opts);
 }
 
 /**
@@ -51,10 +58,10 @@ function updateGeofence(opts) {
  * namespace: namespace;
  */
 function removeGeofence({ name, group = "", namespace }) {
-	if (!namespace) {
-		namespace = Utils.getPrefix()
-	}
-	return Utils.OSExecute(`apx-geofences remove ${namespace} ${group} ${name}`);
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
+  return Utils.OSExecute(`apx-geofences remove ${namespace} ${group} ${name}`);
 }
 
 /**
@@ -62,7 +69,7 @@ function removeGeofence({ name, group = "", namespace }) {
  * @return {*}
  */
 async function getNamespaces() {
-	return Utils.OSExecute(`apx-geofences getns`);
+  return Utils.OSExecute(`apx-geofences getns`);
 }
 
 /**
@@ -72,21 +79,23 @@ async function getNamespaces() {
  * namespace: namespace;
  */
 async function get({ namespace = "", name = null } = {}) {
-	if (!namespace) {
-		namespace = Utils.getPrefix();
-	}
-	var results: any = await Utils.OSExecute(`apx-geofences getstatus ${namespace}`);
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
+  var results: any = await Utils.OSExecute(
+    `apx-geofences getstatus ${namespace}`
+  );
 
-	results = results.map(fence => {
-		if (!fence.name) fence.name = fence.geo_name;
-		fence.time = new Date(parseInt(fence.time) * 1000);
-		return fence;
-	});
-	if (name) {
-		return results.find(fence => fence.name == name);
-	}
+  results = results.map((fence) => {
+    if (!fence.name) fence.name = fence.geo_name;
+    fence.time = new Date(parseInt(fence.time) * 1000);
+    return fence;
+  });
+  if (name) {
+    return results.find((fence) => fence.name == name);
+  }
 
-	return results;
+  return results;
 }
 
 /**
@@ -95,7 +104,7 @@ async function get({ namespace = "", name = null } = {}) {
  * namespace: namespace that belongs of geofence;
  */
 async function getAll(opts) {
-	return await get(opts);
+  return await get(opts);
 }
 
 /**
@@ -104,12 +113,11 @@ async function getAll(opts) {
  * namespace: namespace that belongs of geofence;
  */
 async function deleteAll({ namespace = null } = {}) {
-	if (!namespace) {
-		namespace = Utils.getPrefix();
-	}
-	return Utils.OSExecute(`apx-geofences remove ${namespace}`);
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
+  return Utils.OSExecute(`apx-geofences remove ${namespace}`);
 }
-
 
 /**
  *
@@ -118,34 +126,38 @@ async function deleteAll({ namespace = null } = {}) {
  * @param opts options hash
  * namespace: namespace to check if entered or exited from geofence;
  */
- async function watchGeofencesSpeedLimits(callback, errorCb, { namespace = null } = {}) {
-	if (!namespace) {
-		namespace = Utils.getPrefix();
-	}
+async function watchGeofencesSpeedLimits(
+  callback,
+  errorCb,
+  { namespace = null } = {}
+) {
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
 
-	var handler = function(pattern, channel, data) {
-		if (pattern !== `geofences/notification/warning/${namespace}/*`) return;
-		try {
-			let state = JSON.parse(data)
-			if (!_isObjectLike(state)) throw 'not objectLike';
-			state.is_inside = true;
-			callback(state);
-		} catch (error) {
-			console.log('watchGeofencesSpeedLimits Error:', error);
-		}
-	};
-	try {
-		subscriber.psubscribe(`geofences/notification/warning/${namespace}/*`);
-		subscriber.on("pmessage", handler);
-	} catch (error) {
-		errorCb(error);
-	}
-	return {
-		unsubscribe: () => {
-			subscriber.off("pmessage", handler);
-			subscriber.unsubscribe(`geofences/notification/warning/${namespace}/*`);
-		}
-	};
+  var handler = function (pattern, channel, data) {
+    if (pattern !== `geofences/notification/warning/${namespace}/*`) return;
+    try {
+      let state = JSON.parse(data);
+      if (!_isObjectLike(state)) throw "not objectLike";
+      state.is_inside = true;
+      callback(state);
+    } catch (error) {
+      console.log("watchGeofencesSpeedLimits Error:", error);
+    }
+  };
+  try {
+    subscriber.psubscribe(`geofences/notification/warning/${namespace}/*`);
+    subscriber.on("pmessage", handler);
+  } catch (error) {
+    errorCb(error);
+  }
+  return {
+    unsubscribe: () => {
+      subscriber.off("pmessage", handler);
+      subscriber.unsubscribe(`geofences/notification/warning/${namespace}/*`);
+    },
+  };
 }
 
 /**
@@ -156,34 +168,36 @@ async function deleteAll({ namespace = null } = {}) {
  * namespace: namespace to check if entered or exited from geofence;
  */
 async function watchGeofences(callback, errorCb, { namespace = null } = {}) {
-	if (!namespace) {
-		namespace = Utils.getPrefix();
-	}
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
 
-	var handler = function(pattern, channel, data) {
-		if (pattern !== `geofences/notification/${namespace}/*`) return;
-		var [ns, group, name] = channel.replace(`geofences/notification/`, "").split("/");
-		var [is_inside, timestamp] = data.split(",");
-		callback({
-			name: name,
-			namespace: ns,
-			group: group,
-			is_inside: `${is_inside}` == "true",
-			timestamp: new Date(parseInt(timestamp) * 1000)
-		});
-	};
-	try {
-		subscriber.psubscribe(`geofences/notification/${namespace}/*`);
-		subscriber.on("pmessage", handler);
-	} catch (error) {
-		errorCb(error);
-	}
-	return {
-		unsubscribe: () => {
-			subscriber.off("pmessage", handler);
-			subscriber.unsubscribe(`geofences/notification/${namespace}/*`);
-		}
-	};
+  var handler = function (pattern, channel, data) {
+    if (pattern !== `geofences/notification/${namespace}/*`) return;
+    var [ns, group, name] = channel
+      .replace(`geofences/notification/`, "")
+      .split("/");
+    var [is_inside, timestamp] = data.split(",");
+    callback({
+      name: name,
+      namespace: ns,
+      group: group,
+      is_inside: `${is_inside}` == "true",
+      timestamp: new Date(parseInt(timestamp) * 1000),
+    });
+  };
+  try {
+    subscriber.psubscribe(`geofences/notification/${namespace}/*`);
+    subscriber.on("pmessage", handler);
+  } catch (error) {
+    errorCb(error);
+  }
+  return {
+    unsubscribe: () => {
+      subscriber.off("pmessage", handler);
+      subscriber.unsubscribe(`geofences/notification/${namespace}/*`);
+    },
+  };
 }
 
 /**
@@ -194,33 +208,119 @@ async function watchGeofences(callback, errorCb, { namespace = null } = {}) {
  * namespace: namespace to check if entered or exited from group of geofence;
  */
 function watchGroups(callback, errorCb, { namespace = null } = {}) {
-	if (!namespace) {
-		namespace = Utils.getPrefix();
-	}
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
 
-	var handler = function(pattern, channel, data) {
-		if (pattern !== `geofences/group/notification/${namespace}/*`) return;
-		var [ns, group_name] = channel.replace(`geofences/group/notification/`, "").split("/");
-		var [is_inside, timestamp] = data.split(",");
-		callback({
-			name: group_name,
-			namespace: ns,
-			is_inside: `${is_inside}` == "true",
-			timestamp: new Date(parseInt(timestamp) * 1000)
-		});
-	};
-	try {
-		subscriber.psubscribe(`geofences/group/notification/${namespace}/*`);
-		subscriber.on("pmessage", handler);
-	} catch (error) {
-		errorCb(error);
-	}
-	return {
-		unsubscribe: () => {
-			subscriber.off("pmessage", handler);
-			subscriber.unsubscribe(`geofences/group/notification/${namespace}/*`);
-		}
-	};
+  var handler = function (pattern, channel, data) {
+    if (pattern !== `geofences/group/notification/${namespace}/*`) return;
+    var [ns, group_name] = channel
+      .replace(`geofences/group/notification/`, "")
+      .split("/");
+    var [is_inside, timestamp] = data.split(",");
+    callback({
+      name: group_name,
+      namespace: ns,
+      is_inside: `${is_inside}` == "true",
+      timestamp: new Date(parseInt(timestamp) * 1000),
+    });
+  };
+  try {
+    subscriber.psubscribe(`geofences/group/notification/${namespace}/*`);
+    subscriber.on("pmessage", handler);
+  } catch (error) {
+    errorCb(error);
+  }
+  return {
+    unsubscribe: () => {
+      subscriber.off("pmessage", handler);
+      subscriber.unsubscribe(`geofences/group/notification/${namespace}/*`);
+    },
+  };
 }
 
-export default { addGeofence, updateGeofence, removeGeofence, getNamespaces, get, getAll, watchGeofences, watchGroups, watchGeofencesSpeedLimits, deleteAll };
+/**
+ * Get the status of geofence groups
+ * @param {Object} opts - Options object
+ * @param {string} opts.namespace - Namespace to query, defaults to current prefix if not provided
+ * @param {string|null} opts.name - Optional group name to filter results
+ * @returns {Promise<Array|Object>} Array of group status objects or single group if name is specified
+ */
+async function getGroupsStatus({ namespace = "", name = null } = {}): Promise<Array<any> | object> {
+  if (!namespace) {
+    namespace = Utils.getPrefix();
+  }
+
+  const versionData: any = await Utils.OSExecute(`apx-geofences version`);
+  const versionString = versionData.version || versionData;
+  
+  if (!semver.gte(versionString, "1.4.2")) {
+    console.log("Invalid Geofences version to consult group status.");
+    return [];
+  }
+
+  var results: any = await Utils.OSExecute(
+    `apx-geofences groupstatus ${namespace}`
+  );
+
+  results = results.map(
+    (group: { group: string; is_inside: boolean; time: number }) => {
+      return {
+        name: group.group,
+        namespace: namespace,
+        is_inside: group.is_inside,
+        timestamp: new Date(group.time * 1000),
+      };
+    }
+  );
+
+  if (name) {
+    return results.find((group: { name: string }) => group.name == name);
+  }
+
+  return results;
+}
+
+/**
+ * Watch for geofence removal events
+ * @param {Function} callback - Callback function invoked when a geofence is removed
+ * @param {Function} errorCb - Error callback function invoked if subscription fails
+ * @returns {Object} Object with unsubscribe method to stop watching
+ */
+function watchRemoves(
+  callback: (arg0: any) => void,
+  errorCb: (arg0: any) => void
+): object {
+  var handler = function (channel: string, data: string) {
+    if (channel !== `geofences/configuration/remove`) return;
+    callback(data);
+  };
+
+  try {
+    subscriber.subscribe(`geofences/configuration/remove`);
+    subscriber.on("message", handler);
+  } catch (error) {
+    errorCb(error);
+  }
+  return {
+    unsubscribe: () => {
+      subscriber.off("message", handler);
+      subscriber.unsubscribe(`geofences/configuration/remove`);
+    },
+  };
+}
+
+export default {
+  addGeofence,
+  updateGeofence,
+  removeGeofence,
+  getNamespaces,
+  get,
+  getAll,
+  watchGeofences,
+  watchGroups,
+  watchGeofencesSpeedLimits,
+  deleteAll,
+  getGroupsStatus,
+  watchRemoves,
+};

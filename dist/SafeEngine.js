@@ -30,35 +30,45 @@ exports.onSafeEngineEvent = exports.getStatus = exports.setEngineCutOff = void 0
  */
 const Utils = __importStar(require("./Utils"));
 const Redis_1 = require("./Redis");
-;
 async function setEngineCutOff(config) {
     let response = undefined;
     try {
         response = await Utils.OSExecute(`apx-seco set ${config}`);
     }
     catch (error) {
-        console.log('SafeEngine setCutOff error:', error);
+        console.log("SafeEngine setCutOff error:", error);
     }
     return response;
 }
 exports.setEngineCutOff = setEngineCutOff;
 async function getStatus() {
-    return await Utils.OSExecute('apx-seco status');
+    return await Utils.OSExecute("apx-seco status");
 }
 exports.getStatus = getStatus;
 async function onSafeEngineEvent(callback, errorCallback) {
     const topic = "seco/notification/state";
-    // Get last state
-    //const lastSecoState = await getStatus().catch(console.error);
-    //const lastSecoObject = JSON.parse(JSON.stringify(lastSecoState));
-    //if (lastSecoState != undefined) {
-    //     callback(lastSecoObject);
-    //}
+    const lastSecoState = await getStatus().catch((err) => {
+        console.error(err);
+        return undefined;
+    });
+    if (lastSecoState != undefined) {
+        const lastSecoObject = JSON.parse(JSON.stringify(lastSecoState));
+        callback(lastSecoObject);
+    }
     // Callback Handler
-    const handler = (channel, data) => {
+    const handler = async (channel, data) => {
+        var _a, _b;
         if (channel != topic)
             return;
-        const event = JSON.parse(data);
+        const status = await getStatus().catch((err) => {
+            console.error(err);
+            return undefined;
+        });
+        const event = {
+            mode: (_a = status === null || status === void 0 ? void 0 : status.mode) !== null && _a !== void 0 ? _a : null,
+            trigger: (_b = status === null || status === void 0 ? void 0 : status.trigger) !== null && _b !== void 0 ? _b : null,
+            state: Number(data),
+        };
         callback(event);
     };
     try {
@@ -76,7 +86,7 @@ async function onSafeEngineEvent(callback, errorCallback) {
         },
         off: () => {
             this.unsubscribe();
-        }
+        },
     };
 }
 exports.onSafeEngineEvent = onSafeEngineEvent;

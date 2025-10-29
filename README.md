@@ -553,6 +553,8 @@ Geofences module
     * [~watchGeofencesSpeedLimits(callback, errorCb, opts)](#module_Geofences..watchGeofencesSpeedLimits)
     * [~watchGeofences(callback, errorCb, opts)](#module_Geofences..watchGeofences)
     * [~watchGroups(callback, errorCb, opts)](#module_Geofences..watchGroups)
+    * [~getGroupsStatus(opts)](#module_Geofences..getGroupsStatus) ⇒ <code>Promise.&lt;(Array\|Object)&gt;</code>
+    * [~watchRemoves(callback, errorCb)](#module_Geofences..watchRemoves) ⇒ <code>Object</code>
 
 <a name="module_Geofences..addGeofence"></a>
 
@@ -658,6 +660,33 @@ remove all Geofences from the namespace
 | callback | callback to execute when the device enters or exits a geofence group |
 | errorCb | error callback to execute if something fails |
 | opts | namespace: namespace to check if entered or exited from group of geofence; |
+
+<a name="module_Geofences..getGroupsStatus"></a>
+
+### Geofences~getGroupsStatus(opts) ⇒ <code>Promise.&lt;(Array\|Object)&gt;</code>
+Get the status of geofence groups
+
+**Kind**: inner method of [<code>Geofences</code>](#module_Geofences)  
+**Returns**: <code>Promise.&lt;(Array\|Object)&gt;</code> - Array of group status objects or single group if name is specified  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| opts | <code>Object</code> | Options object |
+| opts.namespace | <code>string</code> | Namespace to query, defaults to current prefix if not provided |
+| opts.name | <code>string</code> \| <code>null</code> | Optional group name to filter results |
+
+<a name="module_Geofences..watchRemoves"></a>
+
+### Geofences~watchRemoves(callback, errorCb) ⇒ <code>Object</code>
+Watch for geofence removal events
+
+**Kind**: inner method of [<code>Geofences</code>](#module_Geofences)  
+**Returns**: <code>Object</code> - Object with unsubscribe method to stop watching  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| callback | <code>function</code> | Callback function invoked when a geofence is removed |
+| errorCb | <code>function</code> | Error callback function invoked if subscription fails |
 
 <a name="module_Hotspot"></a>
 

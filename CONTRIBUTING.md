@@ -37,22 +37,22 @@ create your test on ./tests folder, and require the module that you want to test
 Example:
 
 ```javascript
-S4 = require("../dist/syrus4");
+S4 = require('../dist/syrus4');
 var last;
 var counter = 0;
 S4.GPS.watchPosition(
-	pos => {
-		counter++;
-		console.log(counter);
-		last = pos;
-	},
-	console.error,
-	{
-		accuracy: 50,
-		bearing: 20,
-		time: 30,
-		distance: 50
-	}
+  pos => {
+    counter++;
+    console.log(counter);
+    last = pos;
+  },
+  console.error,
+  {
+    accuracy: 50,
+    bearing: 20,
+    time: 30,
+    distance: 50,
+  }
 );
 ```
 

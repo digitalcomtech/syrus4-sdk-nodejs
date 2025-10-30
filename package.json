@@ -1,46 +1,55 @@
 {
-	"name": "syrus4-nodejs",
-	"version": "0.78.9",
-	"description": "Syrus 4 SdK for javascript/Nodejs",
-	"main": "dist/syrus4.js",
-	"scripts": {
-		"tsc": "tsc",
-		"test": "mocha -r ts-node/register 'src/tests/**/*.ts'",
-		"build": "tsc && jsdoc2md --files ./dist/*.js --template README.hbs > README.md",
-		"document": "jsdoc2md --files ./dist/*.js --template README.hbs > README.md",
-		"bump": "npm version --no-git-tag-version"
-	},
-	"keywords": [
-		"syrus4",
-		"sdk"
-	],
-	"files": [
-		"dist"
-	],
-	"author": "developers@digitalcomtech.com",
-	"license": "ISC",
-	"dependencies": {
-		"axios": "^1.4.0",
-		"esbuild": "0.17.12",
-		"ioredis": "^4.28.5",
-		"lodash.isobjectlike": "^4.0.0",
-		"semver": "^7.5.4",
-		"ssh2": "^0.8.9",
-		"tag-params": "^1.0.6"
-	},
-	"devDependencies": {
-		"@types/chai": "^4.2.14",
-		"@types/ioredis": "^4.14.1",
-		"@types/lodash.isobjectlike": "^4.0.7",
-		"@types/mocha": "^8.2.0",
-		"@types/node": "^12.12.17",
-		"@types/redis": "^2.8.14",
-		"@types/semver": "^7.5.0",
-		"@types/ssh2": "^0.5.46",
-		"chai": "^4.2.0",
-		"jsdoc-to-markdown": "^5.0.3",
-		"mocha": "^8.2.1",
-		"ts-node": "^9.1.1",
-		"typescript": "^4.1.2"
-	}
+  "name": "syrus4-nodejs",
+  "version": "0.78.9",
+  "description": "Syrus 4 SdK for javascript/Nodejs",
+  "main": "dist/syrus4.js",
+  "scripts": {
+    "tsc": "tsc",
+    "test": "mocha -r ts-node/register 'src/tests/**/*.ts'",
+    "build": "tsc && jsdoc2md --files ./dist/*.js --template README.hbs > README.md",
+    "document": "jsdoc2md --files ./dist/*.js --template README.hbs > README.md",
+    "bump": "npm version --no-git-tag-version",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,json,md}\""
+  },
+  "keywords": [
+    "syrus4",
+    "sdk"
+  ],
+  "files": [
+    "dist"
+  ],
+  "author": "developers@digitalcomtech.com",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "esbuild": "0.17.12",
+    "ioredis": "^4.28.5",
+    "lodash.isobjectlike": "^4.0.0",
+    "semver": "^7.5.4",
+    "ssh2": "^0.8.9",
+    "tag-params": "^1.0.6"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/ioredis": "^4.14.1",
+    "@types/lodash.isobjectlike": "^4.0.7",
+    "@types/mocha": "^8.2.0",
+    "@types/node": "^12.12.17",
+    "@types/redis": "^2.8.14",
+    "@types/semver": "^7.5.0",
+    "@types/ssh2": "^0.5.46",
+    "chai": "^4.2.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jsdoc-to-markdown": "^5.0.3",
+    "mocha": "^8.2.1",
+    "prettier": "^3.6.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.2"
+  }
 }

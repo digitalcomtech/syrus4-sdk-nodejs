@@ -1,19 +1,19 @@
 {
-	"device.name": "imei=352753096906357&peg=1",
-	"timestamp": 1576162560,
-	"protocol.id": "syrus4",
-	"device.type.id": "syrus4",
+  "device.name": "imei=352753096906357&peg=1",
+  "timestamp": 1576162560,
+  "protocol.id": "syrus4",
+  "device.type.id": "syrus4",
 
-	"position.latitude": -37.832347,
-	"position.longitude": 145.1862246,
+  "position.latitude": -37.832347,
+  "position.longitude": 145.1862246,
 
-	"position.speed": 0.10799913600691195,
-	"position.altitude": 151,
-	"position.hdop": 1,
-	"position.satellites": 4,
-	"device.battery.percentage": 100,
-	"event.label": "trackpnt",
-	"event.enum": 1,
-	"device.id": 1,
-	"position.direction": 8
+  "position.speed": 0.10799913600691195,
+  "position.altitude": 151,
+  "position.hdop": 1,
+  "position.satellites": 4,
+  "device.battery.percentage": 100,
+  "event.label": "trackpnt",
+  "event.enum": 1,
+  "device.id": 1,
+  "position.direction": 8
 }

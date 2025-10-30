@@ -63,34 +63,47 @@ async function getStatus() {
 }
 exports.getStatus = getStatus;
 async function onSafeEngineEvent(callback, errorCallback) {
-  const topic = 'seco/notification/state';
-  // Get last state
-  //const lastSecoState = await getStatus().catch(console.error);
-  //const lastSecoObject = JSON.parse(JSON.stringify(lastSecoState));
-  //if (lastSecoState != undefined) {
-  //     callback(lastSecoObject);
-  //}
-  // Callback Handler
-  const handler = (channel, data) => {
-    if (channel != topic) return;
-    const event = JSON.parse(data);
-    callback(event);
-  };
-  try {
-    Redis_1.SystemRedisSubscriber.subscribe(topic);
-    Redis_1.SystemRedisSubscriber.on('message', handler);
-  } catch (error) {
-    console.log('onSafeEngineEvent error:', error);
-    errorCallback(error);
-  }
-  return {
-    unsubscribe: () => {
-      Redis_1.SystemRedisSubscriber.off('message', handler);
-      Redis_1.SystemRedisSubscriber.unsubscribe(topic);
-    },
-    off: () => {
-      this.unsubscribe();
-    },
-  };
+    const topic = "seco/notification/state";
+    const lastSecoState = await getStatus().catch((err) => {
+        console.error(err);
+        return undefined;
+    });
+    if (lastSecoState != undefined) {
+        const lastSecoObject = JSON.parse(JSON.stringify(lastSecoState));
+        callback(lastSecoObject);
+    }
+    // Callback Handler
+    const handler = async (channel, data) => {
+        var _a, _b;
+        if (channel != topic)
+            return;
+        const status = await getStatus().catch((err) => {
+            console.error(err);
+            return undefined;
+        });
+        const event = {
+            mode: (_a = status === null || status === void 0 ? void 0 : status.mode) !== null && _a !== void 0 ? _a : null,
+            trigger: (_b = status === null || status === void 0 ? void 0 : status.trigger) !== null && _b !== void 0 ? _b : null,
+            state: Number(data),
+        };
+        callback(event);
+    };
+    try {
+        Redis_1.SystemRedisSubscriber.subscribe(topic);
+        Redis_1.SystemRedisSubscriber.on("message", handler);
+    }
+    catch (error) {
+        console.log("onSafeEngineEvent error:", error);
+        errorCallback(error);
+    }
+    return {
+        unsubscribe: () => {
+            Redis_1.SystemRedisSubscriber.off("message", handler);
+            Redis_1.SystemRedisSubscriber.unsubscribe(topic);
+        },
+        off: () => {
+            this.unsubscribe();
+        },
+    };
 }
 exports.onSafeEngineEvent = onSafeEngineEvent;

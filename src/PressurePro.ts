@@ -44,9 +44,13 @@ export function getUnit(): Promise<number> {
 
 export function setUnit(unit: number): Promise<void> {
   if (unit == undefined) throw "Unit required";
+  if (!Number.isInteger(unit)) throw "invalid unit, must be an integer";
   if (unit < 0 || unit > 255) throw "invalid unit, min: 0, max: 255";
   return Utils.OSExecute(`apx-serial-pp set --unit=${unit}`);
 }
+
+// Tracks active watchers per topic so the shared subscriber connection is only unsubscribed once none remain
+const topicWatcherCounts = new Map<string, number>();
 
 export async function onTpmsEvent( callback:(arg: TpmsEvent) => void, errorCallback:(arg: Error) => void) : Promise<{ unsubscribe: () => void, off: () => void}> {
   const topic = "serial/notification/tpms/state";
@@ -87,16 +91,28 @@ export async function onTpmsEvent( callback:(arg: TpmsEvent) => void, errorCallb
       }
 
     };
-    subscriber.subscribe(topic);
+    // Only the first watcher for this topic needs to actually subscribe on the shared connection
+    const watcherCount = (topicWatcherCounts.get(topic) ?? 0) + 1;
+    topicWatcherCounts.set(topic, watcherCount);
+    if (watcherCount === 1) subscriber.subscribe(topic);
     subscriber.on("message", handler);
   } catch (error) {
     console.error('onTpmsEvent error:', error);
     errorCallback(error);
   }
+  let unsubscribed = false;
   let returnable = {
     unsubscribe: () => {
+      if (unsubscribed) return;
+      unsubscribed = true;
       subscriber.off("message", handler);
-      subscriber.unsubscribe(topic);
+      // Only unsubscribe on the shared connection once the last watcher for this topic is gone
+      const watcherCount = (topicWatcherCounts.get(topic) ?? 1) - 1;
+      topicWatcherCounts.set(topic, watcherCount);
+      if (watcherCount <= 0) {
+        topicWatcherCounts.delete(topic);
+        subscriber.unsubscribe(topic);
+      }
     },
     off: function () { this.unsubscribe() }
   };

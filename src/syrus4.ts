@@ -12,6 +12,7 @@ import IOS from "./IOS";
 import * as Logrotate from "./Logrotate"
 import * as Mobile from "./Mobile"
 import Network from "./Network"
+import * as PressurePro from "./PressurePro"
 import * as Redis from "./Redis"
 import * as RFID from "./RFID"
 import * as Serial from "./Serial"
@@ -46,6 +47,7 @@ export {
 	Logrotate,
 	Mobile,
 	Network,
+	PressurePro,
 	Redis,
 	RFID,
 	Serial,

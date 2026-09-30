@@ -25,7 +25,7 @@ interface ModemEvent {
 }
 
 /**
- * get serial mode: Promise<"console"|"modem"|"unmanaged"|"rfid"|"mdt"|"faitgue_sensor"|"fuel_sensor"|"user"> 
+ * get serial mode: Promise<"console"|"modem"|"unmanaged"|"rfid"|"mdt"|"faitgue_sensor"|"fuel_sensor"|"user">
  */
 export function getSerialMode(){
   return Utils.OSExecute("apx-serial mode");
@@ -34,10 +34,10 @@ export function getSerialMode(){
 /**
  * set serial mode (console or modem)
  */
-export function setSerialMode(mode: 'modem' | 'console' | 'mdt' | 'fatigue_sensor' | 'fuel_sensor' | 'rfid' | 'unmanaged' | 'user' ): Promise<ModemEvent> {
+export function setSerialMode(mode: 'modem' | 'console' | 'mdt' | 'fatigue_sensor' | 'fuel_sensor' | 'rfid' | 'unmanaged' | 'user' | 'pressurepro' ): Promise<ModemEvent> {
     if ( mode.includes('user') || mode.includes('unmanaged') ) {
       return Utils.OSExecute(`apx-serial set --mode=${mode}`);
-    } else { 
+    } else {
       return Utils.OSExecute(`apx-serial mode ${mode}`);
     }
 }
@@ -73,22 +73,22 @@ export function send(message:string, mode:string = 'console'): Promise<void>{
           if (!message.length || message.length > 340) throw "invalid message length (max 340)";
           return Utils.OSExecute(`apx-serial modem send "${message}"`);
         break;
-    
+
       case 'console':
         return Utils.OSExecute(`apx-serial send --msg="${message}"`);
-      break;  
+      break;
 
       case 'mdt':
         return Utils.OSExecute(`apx-serial-mdt send --msg="${message}"`);
-      break; 
+      break;
 
       case 'unmanaged':
         return Utils.OSExecute(`apx-serial-umg send --msg="${message}"`);
-      break; 
+      break;
 
       case 'user':
         return Utils.OSExecute(`apx-serial-user send --msg="${message}"`);
-      break; 
+      break;
 
       default:
         break;
@@ -101,24 +101,24 @@ interface SerialEvent {
   payload: string | null,
 }
 
-export async function onSerialEvent( 
-  callback: (arg: SerialEvent) => void, 
+export async function onSerialEvent(
+  callback: (arg: SerialEvent) => void,
   errorCallback: (arg: Error) => void): Promise<{ unsubscribe: () => void, off: () => void }> {
-  
+
   const pattern = "serial/notification/*"
-  
+
   // Callback Handler
   const handler = (patt:string, channel: string, data: any) => {
     if (pattern != patt) return;
 
-    let event: SerialEvent = { 
-      topic: channel,  
-      payload: data, 
+    let event: SerialEvent = {
+      topic: channel,
+      payload: data,
     };
     callback(event);
   }
 
-  try {  
+  try {
       subscriber.on("pmessage", handler);
       subscriber.psubscribe(pattern);
   } catch (error) {
@@ -129,11 +129,9 @@ export async function onSerialEvent(
   return {
     unsubscribe: () => {
 			subscriber.off("pmessage", handler);
-			subscriber.punsubscribe(pattern); 
+			subscriber.punsubscribe(pattern);
     },
-    off: () => {
-        this.unsubscribe();
-    }  
+    off: function () { this.unsubscribe() }
   }
 }
 
